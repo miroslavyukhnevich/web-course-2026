@@ -1,0 +1,215 @@
+/* task1/style.css */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, sans-serif;
+    line-height: 1.6;
+    color: #040c23;
+    background: #eef2f9;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ===== HEADER ===== */
+header {
+    background: #040c23;
+    color:  #b7b8b9;
+    padding: 30px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+header img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid #040c23;
+    object-fit: cover;      
+    object-position: center top; 
+    display: block;          
+}
+
+header h1 {
+    font-size: 28px;
+}
+
+header p:first-of-type {
+    font-size: 18px;
+    color:  #b7b8b9;
+}
+
+header p:last-of-type {
+    font-style: italic;
+    color: #b7b8b9;
+}
+
+/* ===== NAV ===== */
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 4px rgba(0, 24, 69, 0.08);
+}
+
+nav a {
+    color: #040c23;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+}
+
+nav a:hover {
+    color: #040c23;
+    border-bottom-color: #040c23;
+}
+
+/* ===== MAIN ===== */
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+section {
+    background:  #b7b8b9;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 24, 69, 0.06);
+    border: 1px solid  #b7b8b9;
+}
+
+h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    padding-left: 15px;
+    border-left: 4px solid #040c23;
+    color: #001845;
+}
+
+/* ===== ABOUT ===== */
+article {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+article p {
+    font-size: 16px;
+    color: #1e2b4a;
+}
+
+/* ===== EDUCATION ===== */
+ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+ul li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px 15px;
+    padding: 8px 12px;
+    background: #e8edf7;
+    border-radius: 8px;
+}
+
+ul li span {
+    font-weight: 700;
+    background: #d3dcee;
+    padding: 0 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    white-space: nowrap;
+    color: #001845;
+}
+
+/* ===== SKILLS ===== */
+section#skills div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+section#skills span {
+    background: #e8edf7;
+    padding: 6px 18px;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 15px;
+    border: 1px solid #b3c0dd;
+    color: #001845;
+    transition: background 0.2s, color 0.2s;
+}
+
+section#skills span:hover {
+    background: #001845;
+    color: #e6ecf7;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    margin-top: 30px;
+    background: #040c23;
+    color: #dbe2f0;
+    padding: 25px 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+footer h2 {
+    border-left-color:#001845;
+    color: #e6ecf7;
+    padding-left: 15px;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+footer div {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin: 10px 0 15px;
+}
+
+footer a {
+    color: #c3cee6;
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+footer a:hover {
+    color: white;
+    background: rgba(30, 58, 138, 0.45);
+    text-decoration: underline;
+}
+
+footer p {
+    color: #7a89ad;
+    font-size: 14px;
+    border-top: 1px solid #0a2559;
+    padding-top: 12px;
+}
