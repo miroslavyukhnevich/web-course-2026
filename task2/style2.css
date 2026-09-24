@@ -1,0 +1,416 @@
+/* =========================================================
+   БАЗОВЫЕ СТИЛИ (MOBILE FIRST — до 767px)
+   ========================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --barca-blue: #004d98;
+  --barca-red: #a50044;
+  --barca-gold: #edbb00;
+  --dark: #1a1a1a;
+  --light: #f5f5f5;
+  --white: #ffffff;
+  --radius: 12px;
+  --transition: 0.3s ease;
+}
+
+body {
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  color: var(--dark);
+  background: var(--light);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ---------- ШАПКА (Flexbox внутри) ---------- */
+.header {
+  background: var(--barca-blue);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--white);
+  font-weight: 700;
+}
+
+.logo__mark {
+  background: var(--barca-red);
+  color: var(--white);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.logo__text {
+  font-size: 1rem;
+}
+
+/* Гамбургер (виден только на мобильном) */
+.burger {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 44px;
+  height: 44px;
+  padding: 11px 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.burger span {
+  display: block;
+  height: 3px;
+  background: var(--white);
+  border-radius: 2px;
+  transition: var(--transition);
+}
+
+/* Меню — на мобильном скрыто (демонстрация CSS-логики) */
+.nav {
+  display: none;
+}
+
+.nav__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav__list a {
+  color: var(--white);
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  transition: background var(--transition);
+  display: block;
+}
+
+.nav__list a:hover {
+  background: var(--barca-red);
+}
+
+/* ---------- ГЕРОЙ-СЕКЦИЯ (Grid) ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  padding: 40px 16px;
+  background: linear-gradient(135deg, var(--barca-blue), var(--barca-red));
+  color: var(--white);
+  text-align: center;
+}
+
+.hero__title {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.hero__title span {
+  color: var(--barca-gold);
+}
+
+.hero__subtitle {
+  font-size: 1rem;
+  margin-bottom: 24px;
+  opacity: 0.9;
+}
+
+.hero__image img {
+  border-radius: var(--radius);
+  margin: 0 auto;
+  max-width: 320px;
+}
+
+/* ---------- КНОПКИ ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.btn--primary {
+  background: var(--barca-gold);
+  color: var(--dark);
+}
+
+.btn--primary:hover {
+  background: #ffd633;
+  transform: scale(1.05);
+}
+
+.btn--primary:focus {
+  outline: 3px solid var(--white);
+  outline-offset: 2px;
+}
+
+/* ---------- СЕКЦИИ ---------- */
+.section-title {
+  font-size: 1.6rem;
+  text-align: center;
+  margin-bottom: 24px;
+  color: var(--barca-blue);
+}
+
+.players,
+.about,
+.contact {
+  padding: 40px 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ---------- СЕТКА КАРТОЧЕК (Grid) ---------- */
+.players__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+/* ---------- КАРТОЧКА (Flexbox внутри) ---------- */
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card__img img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.card__body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card__name {
+  font-size: 1.1rem;
+  color: var(--barca-blue);
+}
+
+.card__position {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--barca-red);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card__info {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* ---------- О КЛУБЕ ---------- */
+.about__text {
+  font-size: 1rem;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  color: #444;
+}
+
+/* ---------- ФОРМА (Flexbox) ---------- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form__group label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--barca-blue);
+}
+
+.form__group input,
+.form__group textarea {
+  min-height: 44px;
+  padding: 12px 14px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  background: var(--white);
+}
+
+.form__group input:hover,
+.form__group textarea:hover {
+  border-color: var(--barca-blue);
+}
+
+.form__group input:focus,
+.form__group textarea:focus {
+  outline: none;
+  border-color: var(--barca-red);
+  box-shadow: 0 0 0 3px rgba(165, 0, 68, 0.2);
+}
+
+.form .btn {
+  align-self: flex-start;
+}
+
+/* ---------- ФУТЕР ---------- */
+.footer {
+  background: var(--barca-blue);
+  color: var(--white);
+  text-align: center;
+  padding: 20px 16px;
+  font-size: 0.9rem;
+}
+
+/* =========================================================
+   ПЛАНШЕТ: от 768px
+   ========================================================= */
+@media (min-width: 768px) {
+
+  .header__inner {
+    padding: 16px 24px;
+  }
+
+  .logo__text {
+    font-size: 1.1rem;
+  }
+
+  /* Прячем гамбургер, показываем меню */
+  .burger {
+    display: none;
+  }
+
+  .nav {
+    display: block;
+  }
+
+  .nav__list {
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  .hero {
+    grid-template-columns: 1.2fr 1fr;
+    align-items: center;
+    text-align: left;
+    padding: 60px 24px;
+  }
+
+  .hero__title {
+    font-size: 2.6rem;
+  }
+
+  .hero__image img {
+    max-width: 100%;
+  }
+
+  .players__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .players,
+  .about,
+  .contact {
+    padding: 60px 24px;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+}
+
+/* =========================================================
+   ДЕСКТОП: от 1200px
+   ========================================================= */
+@media (min-width: 1200px) {
+
+  .header__inner {
+    padding: 20px 40px;
+  }
+
+  .hero {
+    padding: 80px 40px;
+    gap: 40px;
+  }
+
+  .hero__title {
+    font-size: 3.2rem;
+  }
+
+  .hero__subtitle {
+    font-size: 1.15rem;
+  }
+
+  .players__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .players,
+  .about,
+  .contact {
+    padding: 80px 40px;
+  }
+
+  .section-title {
+    font-size: 2.2rem;
+    margin-bottom: 40px;
+  }
+}

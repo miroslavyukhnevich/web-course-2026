@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FC Barcelona — Основной состав</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ШАПКА -->
+  <header class="header">
+    <div class="header__inner">
+      <a href="#" class="logo">
+        <span class="logo__mark">FCB</span>
+        <span class="logo__text">FC Barcelona</span>
+      </a>
+
+      <button class="burger" aria-label="Меню">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="nav">
+        <ul class="nav__list">
+          <li><a href="#players">Игроки</a></li>
+          <li><a href="#about">О клубе</a></li>
+          <li><a href="#contact">Контакты</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ГЕРОЙ-СЕКЦИЯ -->
+  <section class="hero">
+    <div class="hero__content">
+      <h1 class="hero__title">Основной состав<br><span>FC Barcelona</span></h1>
+      <p class="hero__subtitle">Легенды Камп Ноу. Игроки, которые делают историю.</p>
+      <a href="#players" class="btn btn--primary">Смотреть состав</a>
+    </div>
+    <div class="hero__image">
+      <img src="https://placehold.co/600x600/004d98/ffffff?text=Camp+Nou" alt="Camp Nou">
+    </div>
+  </section>
+
+  <!-- ИГРОКИ -->
+  <section class="players" id="players">
+    <h2 class="section-title">Игроки основного состава</h2>
+
+    <div class="players__grid">
+
+      <article class="card">
+        <div class="card__img">
+          <img src="https://placehold.co/300x300/004d98/ffffff?text=Ter+Stegen" alt="Марк-Андре тер Штеген">
+        </div>
+        <div class="card__body">
+          <h3 class="card__name">Марк-Андре тер Штеген</h3>
+          <p class="card__position">Вратарь • №1</p>
+          <p class="card__info">Немецкий голкипер, символ надёжности «Барсы».</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card__img">
+          <img src="https://placehold.co/300x300/a50044/ffffff?text=Kounde" alt="Жюль Кунде">
+        </div>
+        <div class="card__body">
+          <h3 class="card__name">Жюль Кунде</h3>
+          <p class="card__position">Защитник • №23</p>
+          <p class="card__info">Универсальный защитник, надёжен и в центре, и на фланге.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card__img">
+          <img src="https://placehold.co/300x300/004d98/ffffff?text=Pedri" alt="Педри">
+        </div>
+        <div class="card__body">
+          <h3 class="card__name">Педри</h3>
+          <p class="card__position">Полузащитник • №8</p>
+          <p class="card__info">Мозг центра поля, наследник традиций Иньесты.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card__img">
+          <img src="https://placehold.co/300x300/a50044/ffffff?text=Gavi" alt="Гави">
+        </div>
+        <div class="card__body">
+          <h3 class="card__name">Гави</h3>
+          <p class="card__position">Полузащитник • №6</p>
+          <p class="card__info">Молодая энергия и агрессия в центре поля.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card__img">
+          <img src="https://placehold.co/300x300/004d98/ffffff?text=Lewandowski" alt="Роберт Левандовски">
+        </div>
+        <div class="card__body">
+          <h3 class="card__name">Роберт Левандовски</h3>
+          <p class="card__position">Нападающий • №9</p>
+          <p class="card__info">Польский бомбардир, лидер атак «Барселоны».</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card__img">
+          <img src="https://placehold.co/300x300/a50044/ffffff?text=Yamal" alt="Ламин Ямаль">
+        </div>
+        <div class="card__body">
+          <h3 class="card__name">Ламин Ямаль</h3>
+          <p class="card__position">Вингер • №19</p>
+          <p class="card__info">Юное дарование, будущее клуба и сборной Испании.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- О КЛУБЕ -->
+  <section class="about" id="about">
+    <h2 class="section-title">О клубе</h2>
+    <p class="about__text">
+      FC Barcelona — один из самых титулованных клубов мира, основанный в 1899 году.
+      Девиз «Més que un club» («Больше, чем клуб») отражает философию команды,
+      её связь с Каталонией и миллионами болельщиков по всему миру.
+    </p>
+  </section>
+
+  <!-- ФОРМА ОБРАТНОЙ СВЯЗИ -->
+  <section class="contact" id="contact">
+    <h2 class="section-title">Свяжитесь с нами</h2>
+
+    <form class="form" action="#" method="post">
+      <div class="form__group">
+        <label for="name">Имя</label>
+        <input type="text" id="name" name="name" placeholder="Ваше имя" required>
+      </div>
+
+      <div class="form__group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+      </div>
+
+      <div class="form__group">
+        <label for="message">Сообщение</label>
+        <textarea id="message" name="message" rows="5" placeholder="Ваше сообщение..." required></textarea>
+      </div>
+
+      <button type="submit" class="btn btn--primary">Отправить</button>
+    </form>
+  </section>
+
+  <!-- ФУТЕР -->
+  <footer class="footer">
+    <p>© 2025 FC Barcelona Fan Page. Учебный проект.</p>
+  </footer>
+
+</body>
+</html>
