@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo-list — Лабораторная №3</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="app">
+        <h1>Список задач</h1>
+
+        <div class="input-row">
+            <input
+                type="text"
+                id="task-input"
+                placeholder="Введите задачу..."
+                autocomplete="off"
+            >
+            <button id="add-btn" type="button">Добавить</button>
+        </div>
+
+        <p id="warning" class="warning" hidden>Введите текст задачи!</p>
+
+        <div class="counter" id="counter">Осталось: 0, Выполнено: 0</div>
+
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all" type="button">Все</button>
+            <button class="filter-btn" data-filter="active" type="button">Активные</button>
+            <button class="filter-btn" data-filter="completed" type="button">Завершённые</button>
+        </div>
+
+        <ul id="task-list" class="task-list"></ul>
+    </main>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
