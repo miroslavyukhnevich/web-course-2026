@@ -146,5 +146,5 @@ filterButtons.forEach(btn => {
     btn.addEventListener('click', () => setFilter(btn.dataset.filter));
 });
 
-// ===== Первичная отрисовка =====
+
 render();
