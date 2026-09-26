@@ -157,6 +157,28 @@
   <footer class="footer">
     <p>© 2025 FC Barcelona Fan Page. Учебный проект.</p>
   </footer>
+<script>
+  const burger = document.querySelector('.burger');
+  const nav = document.querySelector('.nav');
+  const navLinks = document.querySelectorAll('.nav__list a');
 
+  // Открытие/закрытие меню по клику на бургер
+  burger.addEventListener('click', () => {
+    nav.classList.toggle('nav--open');
+    burger.classList.toggle('burger--active');
+    // Меняем aria-label для доступности
+    const isOpen = nav.classList.contains('nav--open');
+    burger.setAttribute('aria-label', isOpen ? 'Закрыть меню' : 'Открыть меню');
+  });
+
+  // Закрываем меню при клике на пункт (чтобы перейти к секции)
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      nav.classList.remove('nav--open');
+      burger.classList.remove('burger--active');
+      burger.setAttribute('aria-label', 'Открыть меню');
+    });
+  });
+</script>
 </body>
 </html>
