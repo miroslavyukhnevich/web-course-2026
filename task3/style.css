@@ -42,7 +42,7 @@ h1 {
 }
 
 #task-input:focus {
-    border-color: #4a7cff;
+    border-color: #ff4ac9;
 }
 
 button {
@@ -55,13 +55,13 @@ button {
 
 #add-btn {
     padding: 10px 16px;
-    background: #4a7cff;
+    background: #ff4ac3;
     color: #fff;
     transition: background 0.15s;
 }
 
 #add-btn:hover {
-    background: #3a6ae6;
+    background: #e63a7f;
 }
 
 .warning {
@@ -94,7 +94,7 @@ button {
 }
 
 .filter-btn.active {
-    background: #4a7cff;
+    background: #ff4afc;
     color: #fff;
 }
 
