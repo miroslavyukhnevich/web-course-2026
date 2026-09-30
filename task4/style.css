@@ -1,0 +1,159 @@
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 16px;
+  background: #f2f4f8;
+  color: #1f2430;
+}
+
+.game {
+  width: 100%;
+  max-width: 560px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px 28px 32px;
+  box-shadow: 0 10px 30px rgba(20, 30, 60, 0.08);
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 26px;
+}
+
+h2 {
+  margin: 24px 0 10px;
+  font-size: 18px;
+}
+
+.rules {
+  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #4a5262;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#guessInput {
+  flex: 1 1 160px;
+  padding: 10px 12px;
+  font-size: 18px;
+  letter-spacing: 4px;
+  text-align: center;
+  border: 2px solid #cdd4e0;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+#guessInput:focus {
+  border-color: #4a7dff;
+}
+
+#guessInput:disabled {
+  background: #eef1f6;
+  color: #8a93a6;
+}
+
+button {
+  padding: 10px 16px;
+  font-size: 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #4a7dff;
+  color: #fff;
+  transition: background 0.15s, transform 0.05s;
+}
+
+button:hover:not(:disabled) {
+  background: #3a68e0;
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  background: #b9c1d1;
+  cursor: not-allowed;
+}
+
+#newGameBtn {
+  background: #6c7689;
+}
+
+#newGameBtn:hover {
+  background: #5a6376;
+}
+
+.message {
+  min-height: 22px;
+  margin-top: 14px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.message.error {
+  color: #d33a3a;
+}
+
+.message.info {
+  color: #4a5262;
+}
+
+.message.win {
+  color: #1f9d55;
+  font-weight: 700;
+}
+
+.stats {
+  margin-top: 16px;
+  font-size: 15px;
+  color: #4a5262;
+}
+
+.history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.history li {
+  padding: 8px 12px;
+  background: #f5f7fb;
+  border-radius: 8px;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.history li .guess {
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-right: 8px;
+}
+
+.history li .bulls {
+  color: #1f9d55;
+}
+
+.history li .cows {
+  color: #d38b1f;
+}

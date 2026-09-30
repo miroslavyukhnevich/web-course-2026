@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Быки и коровы</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game">
+    <h1>Быки и коровы</h1>
+    <p class="rules">
+      Компьютер загадал 4 цифры (от 0 до 9, без повторов).
+      Угадайте число. «Бык» — цифра на своём месте, «корова» — цифра есть, но не на своём месте.
+    </p>
+
+    <div class="controls">
+      <input
+        type="text"
+        id="guessInput"
+        maxlength="4"
+        inputmode="numeric"
+        autocomplete="off"
+        placeholder="Введите 4 цифры"
+      >
+      <button id="checkBtn">Проверить</button>
+      <button id="newGameBtn">Новая игра</button>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <div class="stats">
+      <span>Попыток: <strong id="attemptsCount">0</strong></span>
+    </div>
+
+    <h2>История попыток</h2>
+    <ul id="historyList" class="history"></ul>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
