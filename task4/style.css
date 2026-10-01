@@ -1,128 +1,361 @@
-* {
-  box-sizing: border-box;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+:root {
+  --bg: #0b0f1c;
+  --bg-2: #121829;
+  --card: rgba(18, 24, 41, 0.72);       /* полупрозрачная карточка */
+  --card-border: rgba(255, 255, 255, 0.10);
+  --text: #eef2ff;
+  --text-dim: #9aa5c4;
+  --primary: #6c8cff;
+  --primary-2: #8f6cff;
+  --bull: #22c58b;
+  --cow: #f5a623;
+  --error: #ff5c7a;
+  --radius: 16px;
+  --shadow: 0 25px 70px rgba(0, 0, 0, 0.55);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
 }
 
 body {
-  margin: 0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 40px 16px;
-  background: #f2f4f8;
-  color: #1f2430;
+  padding: 40px 16px 60px;
+  position: relative;
+  overflow-x: hidden;
 }
 
+/* ============================================================
+   СЛОЙ 1. Фоновая картинка с быками и коровами
+   ============================================================
+   Замените bg.jpg на имя вашего файла.
+   Если картинки нет — слой просто не покажется, ничего не сломается.
+*/
+.bg-image {
+  position: fixed;
+  inset: 0;
+  background-image: url('bull-cald-39104361.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* лёгкое затемнение + насыщенность, чтобы картинка не «кричала» */
+  filter: brightness(0.55) saturate(1.1) contrast(1.05);
+  z-index: -3;
+  pointer-events: none;
+}
+
+/* ============================================================
+   СЛОЙ 2. Затемняющая вуаль + градиент сверху и снизу
+   ============================================================
+   Делает верх и низ темнее, центр — прозрачнее.
+   Благодаря этому карточка игры читается на любом фоне.
+*/
+.bg-overlay {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(11, 15, 28, 0.55), transparent 60%),
+    radial-gradient(120% 80% at 50% 100%, rgba(11, 15, 28, 0.85), transparent 60%),
+    linear-gradient(180deg, rgba(11, 15, 28, 0.55) 0%, rgba(11, 15, 28, 0.35) 40%, rgba(11, 15, 28, 0.75) 100%);
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* ============================================================
+   СЛОЙ 3. Цветное свечение — атмосфера
+   ============================================================
+   Те же сине-фиолетово-зелёные пятна, но слабее, чем раньше,
+   чтобы не перебивать картинку.
+*/
+.bg-glow {
+  position: fixed;
+  inset: -20% -10% auto -10%;
+  height: 70vh;
+  background:
+    radial-gradient(50% 50% at 22% 20%, rgba(108, 140, 255, 0.30), transparent 70%),
+    radial-gradient(45% 45% at 82% 12%, rgba(143, 108, 255, 0.24), transparent 70%),
+    radial-gradient(35% 35% at 55% 55%, rgba(34, 197, 139, 0.12), transparent 70%);
+  filter: blur(30px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ============================================================
+   КАРТОЧКА ИГРЫ
+   ============================================================
+   Полупрозрачная, с блюром — сквозь неё мягко просвечивает фон.
+*/
 .game {
   width: 100%;
-  max-width: 560px;
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 24px 28px 32px;
-  box-shadow: 0 10px 30px rgba(20, 30, 60, 0.08);
+  max-width: 620px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+}
+
+.game__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.game__title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.game__icon {
+  font-size: 34px;
+  filter: drop-shadow(0 4px 10px rgba(108, 140, 255, 0.6));
 }
 
 h1 {
-  margin: 0 0 8px;
-  font-size: 26px;
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  background: linear-gradient(90deg, #ffffff, #b9c6ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-h2 {
-  margin: 24px 0 10px;
-  font-size: 18px;
+.game__subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-dim);
 }
 
-.rules {
-  margin: 0 0 20px;
+/* ---------- Кнопки ---------- */
+.btn {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 18px;
+  border-radius: 12px;
+  transition: transform 0.08s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(108, 140, 255, 0.4);
+}
+.btn--primary:hover:not(:disabled) {
+  box-shadow: 0 10px 28px rgba(108, 140, 255, 0.6);
+}
+
+.btn--ghost {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-dim);
+  border: 1px solid var(--card-border);
   font-size: 14px;
-  line-height: 1.5;
-  color: #4a5262;
+  padding: 9px 14px;
+}
+.btn--ghost:hover:not(:disabled) {
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.controls {
+/* ---------- Панель ввода ---------- */
+.panel {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.panel__hint {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--text-dim);
   display: flex;
   flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.chip--bull {
+  background: rgba(34, 197, 139, 0.15);
+  color: var(--bull);
+  border: 1px solid rgba(34, 197, 139, 0.35);
+}
+.chip--cow {
+  background: rgba(245, 166, 35, 0.15);
+  color: var(--cow);
+  border: 1px solid rgba(245, 166, 35, 0.35);
+}
+
+/* ---------- Ввод с ячейками ---------- */
+.guess-row {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.guess-input {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.guess-input input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: text;
+  font-size: 16px;
+}
+
+.cells {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
+  pointer-events: none;
 }
 
-#guessInput {
-  flex: 1 1 160px;
-  padding: 10px 12px;
-  font-size: 18px;
-  letter-spacing: 4px;
-  text-align: center;
-  border: 2px solid #cdd4e0;
-  border-radius: 8px;
-  outline: none;
-  transition: border-color 0.15s;
+.cell {
+  height: 60px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  transition: border-color 0.2s, background 0.2s, transform 0.12s;
+  font-variant-numeric: tabular-nums;
 }
 
-#guessInput:focus {
-  border-color: #4a7dff;
+.cell.is-filled {
+  border-color: rgba(108, 140, 255, 0.75);
+  background: rgba(108, 140, 255, 0.12);
+  animation: pop 0.18s ease;
 }
 
-#guessInput:disabled {
-  background: #eef1f6;
-  color: #8a93a6;
+.guess-input:focus-within .cell {
+  border-color: rgba(108, 140, 255, 0.55);
 }
 
-button {
-  padding: 10px 16px;
-  font-size: 15px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  background: #4a7dff;
-  color: #fff;
-  transition: background 0.15s, transform 0.05s;
+.guess-input.is-error .cell {
+  border-color: var(--error);
+  animation: shake 0.35s ease;
 }
 
-button:hover:not(:disabled) {
-  background: #3a68e0;
+.guess-input.is-locked .cell {
+  opacity: 0.6;
 }
 
-button:active:not(:disabled) {
-  transform: translateY(1px);
+@keyframes pop {
+  0% { transform: scale(0.85); }
+  100% { transform: scale(1); }
 }
 
-button:disabled {
-  background: #b9c1d1;
-  cursor: not-allowed;
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
 }
 
-#newGameBtn {
-  background: #6c7689;
-}
-
-#newGameBtn:hover {
-  background: #5a6376;
-}
-
+/* ---------- Сообщения ---------- */
 .message {
   min-height: 22px;
   margin-top: 14px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
+  color: var(--text-dim);
 }
+.message.error { color: var(--error); }
+.message.info  { color: var(--text); }
+.message.win   { color: var(--bull); font-weight: 700; font-size: 15px; }
 
-.message.error {
-  color: #d33a3a;
-}
-
-.message.info {
-  color: #4a5262;
-}
-
-.message.win {
-  color: #1f9d55;
-  font-weight: 700;
-}
-
+/* ---------- Статистика ---------- */
 .stats {
-  margin-top: 16px;
-  font-size: 15px;
-  color: #4a5262;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.stat {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat__label {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.stat__value {
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(90deg, #fff, #b9c6ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- История ---------- */
+.history-section { margin-top: 26px; }
+
+.history-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin: 0 0 12px;
+  font-weight: 600;
 }
 
 .history {
@@ -131,29 +364,109 @@ button:disabled {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  max-height: 260px;
+  gap: 8px;
+  max-height: 320px;
   overflow-y: auto;
 }
 
 .history li {
-  padding: 8px 12px;
-  background: #f5f7fb;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  animation: slideIn 0.25s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.history__digits {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.history__digit {
+  width: 30px;
+  height: 34px;
   border-radius: 8px;
-  font-size: 15px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
   font-variant-numeric: tabular-nums;
 }
 
-.history li .guess {
-  font-weight: 700;
-  letter-spacing: 2px;
-  margin-right: 8px;
+.history__result {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.history li .bulls {
-  color: #1f9d55;
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
-.history li .cows {
-  color: #d38b1f;
+.badge--bull {
+  background: rgba(34, 197, 139, 0.14);
+  color: var(--bull);
+  border: 1px solid rgba(34, 197, 139, 0.32);
+}
+.badge--cow {
+  background: rgba(245, 166, 35, 0.14);
+  color: var(--cow);
+  border: 1px solid rgba(245, 166, 35, 0.32);
+}
+.badge--zero { opacity: 0.5; }
+
+.history-empty {
+  margin: 8px 2px 0;
+  font-size: 13px;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 18px 0;
+  border: 1px dashed var(--card-border);
+  border-radius: 12px;
+}
+.history-empty.is-hidden { display: none; }
+
+.history::-webkit-scrollbar { width: 8px; }
+.history::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+
+/* Адаптив */
+@media (max-width: 480px) {
+  .game { padding: 20px; border-radius: 20px; }
+  .guess-row { flex-direction: column; }
+  .cell { height: 52px; font-size: 22px; }
+  .btn--primary { width: 100%; justify-content: center; }
+  .game__header { flex-direction: column; align-items: flex-start; }
+  .history li { flex-wrap: wrap; }
+  .history__result { margin-left: 0; }
+}
+
+/* Уважаем настройки пользователя: если он просит меньше анимаций — отключаем */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }

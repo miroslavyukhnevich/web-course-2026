@@ -7,35 +7,75 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="game">
-    <h1>Быки и коровы</h1>
-    <p class="rules">
-      Компьютер загадал 4 цифры (от 0 до 9, без повторов).
-      Угадайте число. «Бык» — цифра на своём месте, «корова» — цифра есть, но не на своём месте.
-    </p>
+  <!-- Слой 1: фоновая картинка с быками/коровами -->
+  <div class="bg-image" aria-hidden="true"></div>
+  <!-- Слой 2: затемняющая вуаль и градиент -->
+  <div class="bg-overlay" aria-hidden="true"></div>
+  <!-- Слой 3: цветное свечение для атмосферы -->
+  <div class="bg-glow" aria-hidden="true"></div>
 
-    <div class="controls">
-      <input
-        type="text"
-        id="guessInput"
-        maxlength="4"
-        inputmode="numeric"
-        autocomplete="off"
-        placeholder="Введите 4 цифры"
-      >
-      <button id="checkBtn">Проверить</button>
-      <button id="newGameBtn">Новая игра</button>
-    </div>
+  <main class="game">
+    <header class="game__header">
+      <div class="game__title">
+        <span class="game__icon">🐂</span>
+        <div>
+          <h1>Быки и коровы</h1>
+          <p class="game__subtitle">Угадайте 4 цифры без повторов</p>
+        </div>
+      </div>
+      <button id="newGameBtn" class="btn btn--ghost" title="Новая игра">
+        <span>↻</span> Новая игра
+      </button>
+    </header>
 
-    <div id="message" class="message"></div>
+    <section class="panel">
+      <p class="panel__hint">
+        <span class="chip chip--bull">🐂 бык</span> — цифра на своём месте
+        <span class="chip chip--cow">🐄 корова</span> — цифра есть, но не на месте
+      </p>
 
-    <div class="stats">
-      <span>Попыток: <strong id="attemptsCount">0</strong></span>
-    </div>
+      <div class="guess-row">
+        <div class="guess-input" id="guessInputWrap">
+          <input
+            type="text"
+            id="guessInput"
+            maxlength="4"
+            inputmode="numeric"
+            autocomplete="off"
+            aria-label="Ваша догадка"
+          >
+          <div class="cells" id="cells" aria-hidden="true">
+            <span class="cell"></span>
+            <span class="cell"></span>
+            <span class="cell"></span>
+            <span class="cell"></span>
+          </div>
+        </div>
+        <button id="checkBtn" class="btn btn--primary">
+          Проверить
+        </button>
+      </div>
 
-    <h2>История попыток</h2>
-    <ul id="historyList" class="history"></ul>
-  </div>
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="stat__label">Попыток</span>
+          <span class="stat__value" id="attemptsCount">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat__label">Лучший результат</span>
+          <span class="stat__value" id="bestScore">—</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="history-section">
+      <h2 class="history-title">История попыток</h2>
+      <ul id="historyList" class="history"></ul>
+      <p class="history-empty" id="historyEmpty">Пока пусто — сделайте первую попытку.</p>
+    </section>
+  </main>
 
   <script src="script.js"></script>
 </body>
