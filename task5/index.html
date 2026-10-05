@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon — Симон говорит</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-wrapper">
+        <h1>Симон говорит</h1>
+
+        <div class="hud">
+            <div class="hud-item">
+                <span class="hud-label">Уровень</span>
+                <span class="hud-value" id="level">0</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">Статус</span>
+                <span class="hud-value" id="status">Нажмите «Старт»</span>
+            </div>
+        </div>
+
+        <!-- Игровое поле: круг из 4 секторов -->
+        <div class="board" id="board">
+            <button class="pad pad--green"  data-index="0" aria-label="Зелёный"></button>
+            <button class="pad pad--red"    data-index="1" aria-label="Красный"></button>
+            <button class="pad pad--blue"   data-index="2" aria-label="Синий"></button>
+            <button class="pad pad--yellow" data-index="3" aria-label="Жёлтый"></button>
+
+            <div class="board-center">
+                <button class="start-btn" id="startBtn">Старт</button>
+            </div>
+        </div>
+
+        <p class="hint" id="hint">Повторите последовательность из 4 кнопок.</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
