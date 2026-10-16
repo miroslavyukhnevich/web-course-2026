@@ -9,9 +9,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #1e1e2a;
   font-family: "Segoe UI", Arial, sans-serif;
   color: #eaeaea;
+
+  /* Фон вокруг: ночное небо с градиентом и "звёздами" через radial-gradient */
+  background:
+    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.7), transparent 60%),
+    radial-gradient(2px 2px at 70% 15%, rgba(255,255,255,0.5), transparent 60%),
+    radial-gradient(1.5px 1.5px at 40% 80%, rgba(255,255,255,0.6), transparent 60%),
+    radial-gradient(1.5px 1.5px at 85% 60%, rgba(255,255,255,0.4), transparent 60%),
+    radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,0.5), transparent 60%),
+    radial-gradient(1px 1px at 55% 45%, rgba(255,255,255,0.5), transparent 60%),
+    linear-gradient(180deg, #0b0b1a 0%, #14142b 60%, #0a0a16 100%);
+  background-attachment: fixed;
 }
 
 .game-wrapper {
@@ -23,75 +33,137 @@ body {
 }
 
 h1 {
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #6ee7b7, #34d399, #22d3ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 20px rgba(110, 231, 183, 0.15);
 }
 
 .hud {
-  font-size: 18px;
+  display: flex;
+  gap: 10px;
+  font-size: 16px;
+  color: #cbd5e1;
 }
 
 .hud strong {
   color: #6ee7b7;
 }
 
+.hud-sep {
+  color: #475569;
+}
+
+/* Обёртка canvas нужна, чтобы оверлей позиционировался относительно поля */
+.canvas-wrap {
+  position: relative;
+  border-radius: 12px;
+  padding: 4px;
+  background: linear-gradient(135deg, rgba(110,231,183,0.5), rgba(34,211,238,0.3), rgba(110,231,183,0.1));
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.05),
+    0 20px 40px -20px rgba(0, 0, 0, 0.9),
+    0 0 60px rgba(110, 231, 183, 0.08);
+}
+
 canvas {
-  background: #101018;
-  border: 2px solid #3a3a4d;
-  border-radius: 6px;
+  background: #0a0f1c;
+  border-radius: 8px;
   display: block;
 }
 
+/* ---------- Оверлеи (меню старта / game over) ---------- */
 .overlay {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(16, 16, 24, 0.95);
-  border: 2px solid #6ee7b7;
-  border-radius: 10px;
-  padding: 24px 32px;
-  text-align: center;
+  inset: 4px; /* совпадает с padding .canvas-wrap */
+  border-radius: 8px;
+  background: rgba(10, 15, 28, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   flex-direction: column;
-  gap: 12px;
   align-items: center;
-  min-width: 240px;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 24px;
+  animation: fadeIn 0.2s ease;
 }
 
 .overlay.hidden {
   display: none;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 .over-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #f87171;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #6ee7b7, #22d3ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.over-title--danger {
+  background: linear-gradient(90deg, #f87171, #fbbf24);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.over-sub {
+  font-size: 14px;
+  color: #94a3b8;
+  letter-spacing: 1px;
 }
 
 .over-score {
   font-size: 16px;
+  color: #cbd5e1;
 }
 
-#restartBtn {
-  margin-top: 6px;
-  padding: 10px 20px;
-  font-size: 15px;
+.over-score strong {
+  color: #6ee7b7;
+}
+
+.btn-primary {
+  margin-top: 8px;
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   border: none;
-  border-radius: 6px;
-  background: #6ee7b7;
-  color: #101018;
-  font-weight: 600;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #6ee7b7, #22d3ee);
+  color: #0a0f1c;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: 0 6px 18px -6px rgba(110, 231, 183, 0.6);
 }
 
-#restartBtn:hover {
-  background: #34d399;
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px -8px rgba(110, 231, 183, 0.8);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
 }
 
 .hint {
   font-size: 13px;
   color: #9ca3af;
+  letter-spacing: 0.5px;
 }
