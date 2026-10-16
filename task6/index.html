@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Змейка на Canvas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-wrapper">
+    <h1>Змейка</h1>
+    <div class="hud">
+      <span>Счёт: <strong id="score">0</strong></span>
+    </div>
+    <canvas id="game" width="400" height="400"></canvas>
+    <div id="overlay" class="overlay hidden">
+      <p class="over-title">Игра окончена</p>
+      <p class="over-score">Итоговый счёт: <strong id="finalScore">0</strong></p>
+      <button id="restartBtn">Начать заново</button>
+    </div>
+    <p class="hint">Управление: стрелки ← ↑ → ↓</p>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
