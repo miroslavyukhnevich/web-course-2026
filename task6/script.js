@@ -38,7 +38,7 @@ const restartBtn = document.getElementById("restartBtn");
  
 /* ---------- Картинка поля (images/field.svg — замените на свою) ---------- */
 const fieldImg = new Image();
-fieldImg.src = "images/field.svg";
+fieldImg.src = "field.svg";
  
 function drawField() {
   if (fieldImg.complete && fieldImg.naturalWidth) {
