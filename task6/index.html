@@ -2,17 +2,14 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Змейка на Canvas</title>
+  <title>Змейка</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="game-wrapper">
-    <h1>Змейка</h1>
-
     <div class="hud">
-      <span>Счёт: <strong id="score">0</strong></span>
-      <span class="hud-sep">•</span>
-      <span>Рекорд: <strong id="best">0</strong></span>
+      <span class="hud-item">Счёт <strong id="score">0</strong></span>
+      <span class="hud-item">Рекорд <strong id="best">0</strong></span>
     </div>
 
     <div class="canvas-wrap">
@@ -20,21 +17,36 @@
 
       <!-- Меню старта -->
       <div id="startMenu" class="overlay">
-        <p class="over-title">Змейка</p>
-        <p class="over-sub">Стрелки или WASD</p>
-        <button id="startBtn" class="btn-primary">Играть</button>
+        <div class="overlay-card">
+          <p class="over-title">Змейка</p>
+          <p class="over-sub">Собери как можно больше яблок</p>
+
+          <div class="keys">
+            <div class="keys-row">
+              <span class="key">W</span>
+            </div>
+            <div class="keys-row">
+              <span class="key">A</span>
+              <span class="key">S</span>
+              <span class="key">D</span>
+            </div>
+            <p class="keys-label">или стрелки</p>
+          </div>
+
+          <button id="startBtn" class="btn-primary" type="button">Играть</button>
+        </div>
       </div>
 
-      <!-- Экран проигрыша -->
+      <!-- Проигрыш -->
       <div id="gameOverMenu" class="overlay hidden">
-        <p class="over-title over-title--danger">Игра окончена</p>
-        <p class="over-score">Счёт: <strong id="finalScore">0</strong></p>
-        <p class="over-score">Рекорд: <strong id="finalBest">0</strong></p>
-        <button id="restartBtn" class="btn-primary">Начать заново</button>
+        <div class="overlay-card">
+          <p class="over-title over-title--danger">Игра окончена</p>
+          <p class="over-score">Счёт <strong id="finalScore">0</strong></p>
+          <p class="over-score">Рекорд <strong id="finalBest">0</strong></p>
+          <button id="restartBtn" class="btn-primary" type="button">Заново</button>
+        </div>
       </div>
     </div>
-
-    <p class="hint">Управление: ← ↑ → ↓ или W A S D</p>
   </div>
   <script src="script.js"></script>
 </body>
