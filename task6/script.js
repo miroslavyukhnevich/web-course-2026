@@ -1,49 +1,30 @@
 "use strict";
-
-/* ============================================================
- *  Константы
- * ============================================================ */
+ 
+/* ---------- Константы ---------- */
 const CELL_SIZE = 20;
 const GRID_SIZE = 20;
 const CANVAS_SIZE = CELL_SIZE * GRID_SIZE;
-const MOVE_INTERVAL = 150;
+const MOVE_INTERVAL = 130;     // мс на шаг
 const INITIAL_LENGTH = 3;
-
-const DIRECTIONS = {
-  ArrowUp:    { x: 0,  y: -1 },
-  ArrowDown:  { x: 0,  y: 1  },
-  ArrowLeft:  { x: -1, y: 0  },
-  ArrowRight: { x: 1,  y: 0  },
-  w: { x: 0,  y: -1 }, W: { x: 0,  y: -1 },
-  s: { x: 0,  y: 1  }, S: { x: 0,  y: 1  },
-  a: { x: -1, y: 0  }, A: { x: -1, y: 0  },
-  d: { x: 1,  y: 0  }, D: { x: 1,  y: 0  },
-  // Русская раскладка (ц/ф/ы/в)
-  ц: { x: 0,  y: -1 }, Ц: { x: 0,  y: -1 },
-  ы: { x: 0,  y: 1  }, Ы: { x: 0,  y: 1  },
-  ф: { x: -1, y: 0  }, Ф: { x: -1, y: 0  },
-  в: { x: 1,  y: 0  }, В: { x: 1,  y: 0  },
+const MAX_QUEUE = 3;           // сколько поворотов помним
+const EARLY_TURN_AT = 0.35;    // если нажали после этой доли шага — поворачиваем сразу
+ 
+const UP = { x: 0, y: -1 }, DOWN = { x: 0, y: 1 }, LEFT = { x: -1, y: 0 }, RIGHT = { x: 1, y: 0 };
+ 
+// event.code не зависит от раскладки: W/A/S/D работают и на русской
+const KEYMAP = {
+  ArrowUp: UP, ArrowDown: DOWN, ArrowLeft: LEFT, ArrowRight: RIGHT,
+  KeyW: UP, KeyS: DOWN, KeyA: LEFT, KeyD: RIGHT,
 };
-
-/* ============================================================
- *  Состояние
- * ============================================================ */
+ 
+/* ---------- Состояние ---------- */
 const state = {
-  snake: [],
-  direction: null,
-  nextDirection: null,
-  apple: null,
-  score: 0,
-  best: 0,
-  gameOver: false,
-  running: false,
-  lastMoveTime: 0,
-  tickProgress: 0,
+  snake: [], direction: RIGHT, queue: [], apple: null,
+  score: 0, best: 0, gameOver: false, running: false,
+  lastMoveTime: 0, tickProgress: 0,
 };
-
-/* ============================================================
- *  DOM
- * ============================================================ */
+ 
+/* ---------- DOM ---------- */
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const scoreEl = document.getElementById("score");
@@ -54,410 +35,266 @@ const startMenuEl = document.getElementById("startMenu");
 const gameOverMenuEl = document.getElementById("gameOverMenu");
 const startBtn = document.getElementById("startBtn");
 const restartBtn = document.getElementById("restartBtn");
-
-/* ============================================================
- *  Фон поля (offscreen)
- * ============================================================ */
-const backgroundCanvas = document.createElement("canvas");
-backgroundCanvas.width = CANVAS_SIZE;
-backgroundCanvas.height = CANVAS_SIZE;
-const bgCtx = backgroundCanvas.getContext("2d");
-
-function buildBackground() {
-  const grad = bgCtx.createLinearGradient(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-  grad.addColorStop(0,   "#0a1226");
-  grad.addColorStop(0.5, "#0d1830");
-  grad.addColorStop(1,   "#08101f");
-  bgCtx.fillStyle = grad;
-  bgCtx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
-  bgCtx.fillStyle = "rgba(120, 200, 255, 0.18)";
-  for (let i = 0; i < 90; i++) {
-    const x = (i * 53) % CANVAS_SIZE;
-    const y = (i * 97 + 31) % CANVAS_SIZE;
-    const r = (i % 3) + 0.5;
-    bgCtx.beginPath();
-    bgCtx.arc(x, y, r, 0, Math.PI * 2);
-    bgCtx.fill();
+ 
+/* ---------- Картинка поля (images/field.svg — замените на свою) ---------- */
+const fieldImg = new Image();
+fieldImg.src = "images/field.svg";
+ 
+function drawField() {
+  if (fieldImg.complete && fieldImg.naturalWidth) {
+    ctx.drawImage(fieldImg, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+  } else {
+    ctx.fillStyle = "#1d6b3c";
+    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
   }
-
-  const blobs = [
-    { x: 80,  y: 90,  r: 120, c: "rgba(34, 211, 238, 0.07)" },
-    { x: 320, y: 300, r: 140, c: "rgba(110, 231, 183, 0.06)" },
-    { x: 260, y: 80,  r: 100, c: "rgba(168, 85, 247, 0.06)" },
-  ];
-  for (const b of blobs) {
-    const g = bgCtx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
-    g.addColorStop(0, b.c);
-    g.addColorStop(1, "transparent");
-    bgCtx.fillStyle = g;
-    bgCtx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+  // мягкая шахматка вместо жёсткой сетки
+  ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+  for (let x = 0; x < GRID_SIZE; x++) {
+    for (let y = 0; y < GRID_SIZE; y++) {
+      if ((x + y) % 2) ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+    }
   }
 }
-
-/* ============================================================
- *  Инициализация
- * ============================================================ */
+ 
+/* ---------- Инициализация ---------- */
 function initGame() {
-  const startX = Math.floor(GRID_SIZE / 2);
-  const startY = Math.floor(GRID_SIZE / 2);
-
+  const sx = Math.floor(GRID_SIZE / 2), sy = Math.floor(GRID_SIZE / 2);
   state.snake = [];
-  for (let i = 0; i < INITIAL_LENGTH; i++) {
-    state.snake.push({ x: startX - i, y: startY });
-  }
-
-  state.direction = { ...DIRECTIONS.ArrowRight };
-  state.nextDirection = null;
+  for (let i = 0; i < INITIAL_LENGTH; i++) state.snake.push({ x: sx - i, y: sy });
+  state.direction = RIGHT;
+  state.queue = [];
   state.score = 0;
   state.gameOver = false;
   state.running = false;
   state.lastMoveTime = performance.now();
   state.tickProgress = 0;
-
   spawnApple();
   updateHUD();
 }
-
+ 
 function spawnApple() {
   const free = [];
-  for (let x = 0; x < GRID_SIZE; x++) {
-    for (let y = 0; y < GRID_SIZE; y++) {
+  for (let x = 0; x < GRID_SIZE; x++)
+    for (let y = 0; y < GRID_SIZE; y++)
       if (!state.snake.some(s => s.x === x && s.y === y)) free.push({ x, y });
-    }
-  }
-  state.apple = free.length
-    ? free[Math.floor(Math.random() * free.length)]
-    : null;
+  state.apple = free.length ? free[Math.floor(Math.random() * free.length)] : null;
 }
-
-/* ============================================================
- *  Коллизии
- * ============================================================ */
+ 
+/* ---------- Логика ---------- */
 function checkCollision(head, willGrow) {
   if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) return true;
   const body = willGrow ? state.snake : state.snake.slice(0, -1);
   return body.some(s => s.x === head.x && s.y === head.y);
 }
-
+ 
 function moveSnake() {
-  if (state.nextDirection) {
-    state.direction = state.nextDirection;
-    state.nextDirection = null;
-  }
-  const dir = state.direction;
-  const head = state.snake[0];
+  if (state.queue.length) state.direction = state.queue.shift();
+  const dir = state.direction, head = state.snake[0];
   const newHead = { x: head.x + dir.x, y: head.y + dir.y };
-
-  const willGrow = state.apple
-    && newHead.x === state.apple.x
-    && newHead.y === state.apple.y;
-
+  const willGrow = !!state.apple && newHead.x === state.apple.x && newHead.y === state.apple.y;
+ 
   if (checkCollision(newHead, willGrow)) { endGame(); return; }
-
+ 
   state.snake.unshift(newHead);
-  if (willGrow) {
-    state.score += 1;
-    updateHUD();
-    spawnApple();
-  } else {
-    state.snake.pop();
-  }
+  if (willGrow) { state.score++; updateHUD(); spawnApple(); }
+  else state.snake.pop();
 }
-
-/* ============================================================
- *  update / draw
- * ============================================================ */
-function update(currentTime) {
+ 
+function update(now) {
   if (!state.running || state.gameOver) return;
-  const elapsed = currentTime - state.lastMoveTime;
+  const elapsed = now - state.lastMoveTime;
   if (elapsed >= MOVE_INTERVAL) {
-    state.lastMoveTime = currentTime - (elapsed % MOVE_INTERVAL);
+    state.lastMoveTime = now - (elapsed % MOVE_INTERVAL);
     moveSnake();
     state.tickProgress = 0;
   } else {
     state.tickProgress = elapsed / MOVE_INTERVAL;
   }
 }
-
+ 
+/* ---------- Отрисовка ---------- */
 function draw() {
-  ctx.drawImage(backgroundCanvas, 0, 0);
-  drawGrid();
+  drawField();
   drawApple();
   drawSnake();
 }
-
-function drawGrid() {
-  ctx.save();
-  ctx.strokeStyle = "rgba(140, 200, 255, 0.10)";
-  ctx.lineWidth = 1;
-  for (let i = 1; i < GRID_SIZE; i++) {
-    const p = i * CELL_SIZE + 0.5;
-    ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, CANVAS_SIZE); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(CANVAS_SIZE, p); ctx.stroke();
-  }
-  ctx.restore();
-}
-
+ 
 function drawApple() {
   if (!state.apple) return;
   const cx = state.apple.x * CELL_SIZE + CELL_SIZE / 2;
   const cy = state.apple.y * CELL_SIZE + CELL_SIZE / 2;
   const r = CELL_SIZE / 2 - 2;
-
-  ctx.beginPath();
-  ctx.fillStyle = "rgba(248, 113, 113, 0.25)";
-  ctx.arc(cx, cy, r + 2, 0, Math.PI * 2);
-  ctx.fill();
-
-  const grad = ctx.createRadialGradient(cx - r * 0.3, cy - r * 0.4, 1, cx, cy, r);
-  grad.addColorStop(0, "#fecaca");
-  grad.addColorStop(0.5, "#f87171");
-  grad.addColorStop(1, "#b91c1c");
-  ctx.beginPath();
-  ctx.fillStyle = grad;
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.fillStyle = "rgba(255,255,255,0.75)";
-  ctx.arc(cx - r * 0.35, cy - r * 0.45, r * 0.28, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.strokeStyle = "#65a30d";
-  ctx.lineWidth = 2;
-  ctx.lineCap = "round";
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - r);
-  ctx.quadraticCurveTo(cx + 2, cy - r - 4, cx + 5, cy - r - 3);
-  ctx.stroke();
+ 
+  ctx.fillStyle = "rgba(0,0,0,0.28)";
+  ctx.beginPath(); ctx.ellipse(cx + 1, cy + r - 1, r * 0.9, r * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+ 
+  const g = ctx.createRadialGradient(cx - r * 0.3, cy - r * 0.4, 1, cx, cy, r);
+  g.addColorStop(0, "#fecaca"); g.addColorStop(0.5, "#ef4444"); g.addColorStop(1, "#991b1b");
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+ 
+  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.beginPath(); ctx.arc(cx - r * 0.35, cy - r * 0.45, r * 0.25, 0, Math.PI * 2); ctx.fill();
+ 
+  ctx.strokeStyle = "#3f6212"; ctx.lineWidth = 2; ctx.lineCap = "round";
+  ctx.beginPath(); ctx.moveTo(cx, cy - r);
+  ctx.quadraticCurveTo(cx + 2, cy - r - 4, cx + 5, cy - r - 3); ctx.stroke();
 }
-
-/* ---------- Змейка ---------- */
+ 
 function roundRect(x, y, w, h, r) {
   const rr = Math.min(r, w / 2, h / 2);
   ctx.beginPath();
   ctx.moveTo(x + rr, y);
-  ctx.arcTo(x + w, y,     x + w, y + h, rr);
-  ctx.arcTo(x + w, y + h, x,     y + h, rr);
-  ctx.arcTo(x,     y + h, x,     y,     rr);
-  ctx.arcTo(x,     y,     x + w, y,     rr);
+  ctx.arcTo(x + w, y, x + w, y + h, rr);
+  ctx.arcTo(x + w, y + h, x, y + h, rr);
+  ctx.arcTo(x, y + h, x, y, rr);
+  ctx.arcTo(x, y, x + w, y, rr);
   ctx.closePath();
 }
-
+ 
 function drawSnake() {
-  const n = state.snake.length;
-  const t = state.tickProgress;
-
+  const n = state.snake.length, t = state.tickProgress;
+  const moving = state.running && !state.gameOver;
   for (let i = n - 1; i >= 0; i--) {
     const seg = state.snake[i];
     let px = seg.x, py = seg.y;
-
-    if (state.running && !state.gameOver) {
-      let tx = seg.x, ty = seg.y;
-      if (i > 0) {
-        tx = state.snake[i - 1].x;
-        ty = state.snake[i - 1].y;
-      } else {
-        tx = seg.x + state.direction.x;
-        ty = seg.y + state.direction.y;
-      }
-      px = seg.x + (tx - seg.x) * t;
-      py = seg.y + (ty - seg.y) * t;
+    if (moving) {
+      const tx = i > 0 ? state.snake[i - 1].x : seg.x + state.direction.x;
+      const ty = i > 0 ? state.snake[i - 1].y : seg.y + state.direction.y;
+      px += (tx - seg.x) * t;
+      py += (ty - seg.y) * t;
     }
-
-    const x = px * CELL_SIZE;
-    const y = py * CELL_SIZE;
-
-    if (i === 0) drawHead(x, y);
-    else drawBodySegment(x, y, i, n);
+    if (i === 0) drawHead(px * CELL_SIZE, py * CELL_SIZE);
+    else drawBodySegment(px * CELL_SIZE, py * CELL_SIZE, i, n);
   }
 }
-
+ 
 function drawBodySegment(x, y, index, total) {
-  const isTail = index === total - 1;
-  const shrink = isTail ? 5 : 3;
-  const inset = shrink / 2;
-  const ratio = index / Math.max(1, total - 1);
-
-  const r = Math.round(110 - 40 * ratio);
-  const g = Math.round(231 - 60 * ratio);
-  const b = Math.round(183 - 60 * ratio);
-
-  ctx.fillStyle = "rgba(0,0,0,0.35)";
-  roundRect(x + inset + 1, y + inset + 1, CELL_SIZE - shrink, CELL_SIZE - shrink, 6);
-  ctx.fill();
-
-  ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-  roundRect(x + inset, y + inset, CELL_SIZE - shrink, CELL_SIZE - shrink, 6);
-  ctx.fill();
-
-  ctx.fillStyle = "rgba(255,255,255,0.18)";
-  roundRect(x + inset + 2, y + inset + 2, (CELL_SIZE - shrink) * 0.6, 4, 2);
-  ctx.fill();
+  const shrink = index === total - 1 ? 6 : 3;
+  const inset = shrink / 2, size = CELL_SIZE - shrink;
+  const k = index / Math.max(1, total - 1);
+  const r = Math.round(217 - 90 * k), g = Math.round(249 - 90 * k), b = Math.round(157 - 100 * k);
+ 
+  ctx.fillStyle = "rgba(0,0,0,0.3)";
+  roundRect(x + inset + 1, y + inset + 2, size, size, 6); ctx.fill();
+  ctx.fillStyle = `rgb(${r},${g},${b})`;
+  roundRect(x + inset, y + inset, size, size, 6); ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,0.22)";
+  roundRect(x + inset + 2, y + inset + 2, size * 0.6, 3, 1.5); ctx.fill();
 }
-
+ 
 function drawHead(x, y) {
-  const inset = 1;
-  const w = CELL_SIZE - inset * 2;
-
-  ctx.fillStyle = "rgba(0,0,0,0.4)";
-  roundRect(x + inset + 1, y + inset + 1, w, w, 7);
-  ctx.fill();
-
+  const inset = 1, w = CELL_SIZE - inset * 2;
+  ctx.fillStyle = "rgba(0,0,0,0.35)";
+  roundRect(x + inset + 1, y + inset + 2, w, w, 7); ctx.fill();
+ 
   const grad = ctx.createLinearGradient(x, y, x + CELL_SIZE, y + CELL_SIZE);
-  grad.addColorStop(0, "#a7f3d0");
-  grad.addColorStop(1, "#34d399");
+  grad.addColorStop(0, "#f7fee7"); grad.addColorStop(1, "#bef264");
   ctx.fillStyle = grad;
-  roundRect(x + inset, y + inset, w, w, 7);
-  ctx.fill();
-
-  ctx.strokeStyle = "rgba(16, 185, 129, 0.9)";
-  ctx.lineWidth = 1.5;
-  roundRect(x + inset, y + inset, w, w, 7);
-  ctx.stroke();
-
+  roundRect(x + inset, y + inset, w, w, 7); ctx.fill();
+  ctx.strokeStyle = "rgba(63,98,18,0.9)"; ctx.lineWidth = 1.5;
+  roundRect(x + inset, y + inset, w, w, 7); ctx.stroke();
+ 
   const dir = state.direction;
-  const cx = x + CELL_SIZE / 2;
-  const cy = y + CELL_SIZE / 2;
-  const eyeOffset = 3.5;
-  const eyeR = 2.2;
-
-  let e1, e2;
-  if (dir.x === 1)       { e1 = { x: cx + eyeOffset, y: cy - 3 }; e2 = { x: cx + eyeOffset, y: cy + 3 }; }
-  else if (dir.x === -1) { e1 = { x: cx - eyeOffset, y: cy - 3 }; e2 = { x: cx - eyeOffset, y: cy + 3 }; }
-  else if (dir.y === 1)  { e1 = { x: cx - 3, y: cy + eyeOffset }; e2 = { x: cx + 3, y: cy + eyeOffset }; }
-  else                   { e1 = { x: cx - 3, y: cy - eyeOffset }; e2 = { x: cx + 3, y: cy - eyeOffset }; }
-
-  for (const e of [e1, e2]) {
-    ctx.beginPath(); ctx.fillStyle = "#ffffff";
-    ctx.arc(e.x, e.y, eyeR, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.fillStyle = "#0a0f1c";
-    ctx.arc(e.x + dir.x * 0.6, e.y + dir.y * 0.6, eyeR * 0.55, 0, Math.PI * 2); ctx.fill();
+  const cx = x + CELL_SIZE / 2, cy = y + CELL_SIZE / 2;
+  const px = -dir.y, py = dir.x;               // перпендикуляр
+  for (const s of [-1, 1]) {
+    const ex = cx + dir.x * 3.5 + px * 3 * s;
+    const ey = cy + dir.y * 3.5 + py * 3 * s;
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(ex, ey, 2.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#10210a"; ctx.beginPath(); ctx.arc(ex + dir.x * 0.6, ey + dir.y * 0.6, 1.2, 0, Math.PI * 2); ctx.fill();
   }
-
-  const bx = cx + dir.x * 8;
-  const by = cy + dir.y * 8;
+ 
+  const bx = cx + dir.x * 8, by = cy + dir.y * 8;
   const wag = Math.sin(performance.now() / 120) * 1.5;
-  const perpX = -dir.y, perpY = dir.x;
-  const tx2 = bx + dir.x * 5 + perpX * wag;
-  const ty2 = by + dir.y * 5 + perpY * wag;
-
-  ctx.strokeStyle = "#ef4444";
-  ctx.lineWidth = 1.6;
-  ctx.lineCap = "round";
-  ctx.beginPath();
-  ctx.moveTo(bx, by); ctx.lineTo(tx2, ty2); ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(tx2, ty2);
-  ctx.lineTo(tx2 + perpX * 2 + dir.x * 2, ty2 + perpY * 2 + dir.y * 2);
-  ctx.moveTo(tx2, ty2);
-  ctx.lineTo(tx2 - perpX * 2 + dir.x * 2, ty2 - perpY * 2 + dir.y * 2);
+  const tx = bx + dir.x * 5 + px * wag, ty = by + dir.y * 5 + py * wag;
+  ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 1.6; ctx.lineCap = "round";
+  ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(tx, ty);
+  ctx.moveTo(tx, ty); ctx.lineTo(tx + px * 2 + dir.x * 2, ty + py * 2 + dir.y * 2);
+  ctx.moveTo(tx, ty); ctx.lineTo(tx - px * 2 + dir.x * 2, ty - py * 2 + dir.y * 2);
   ctx.stroke();
 }
-
-/* ============================================================
- *  Цикл
- * ============================================================ */
-function gameLoop(currentTime) {
-  update(currentTime);
+ 
+/* ---------- Цикл ---------- */
+function gameLoop(now) {
+  update(now);
   draw();
   requestAnimationFrame(gameLoop);
 }
-
-/* ============================================================
- *  Управление
- * ============================================================ */
-function handleKeyDown(event) {
-  const newDir = DIRECTIONS[event.key];
-  if (!newDir) return;
-
-  // Не скроллим страницу стрелками
-  if (event.key.startsWith("Arrow")) event.preventDefault();
-
-  // Enter / Space запускают игру, если открыто меню старта
-  if ((event.key === "Enter" || event.key === " ") && !state.running) {
-    if (!startMenuEl.classList.contains("hidden")) {
-      event.preventDefault();
-      startGame();
-      return;
-    }
-  }
-
-  if (!state.running || state.gameOver) return;
-
-  const cur = state.direction;
-  const isOpposite = cur.x + newDir.x === 0 && cur.y + newDir.y === 0;
-  if (isOpposite) return;
-  if (newDir.x === cur.x && newDir.y === cur.y) return;
-
-  state.nextDirection = newDir;
+ 
+/* ---------- Управление ---------- */
+function isMenuOpen() {
+  return !startMenuEl.classList.contains("hidden") || !gameOverMenuEl.classList.contains("hidden");
 }
-
-/* ============================================================
- *  Старт / конец
- * ============================================================ */
+ 
+function queueTurn(newDir) {
+  if (!state.running || state.gameOver) return;
+  const last = state.queue.length ? state.queue[state.queue.length - 1] : state.direction;
+  if (newDir === last) return;                                   // то же направление
+  if (last.x + newDir.x === 0 && last.y + newDir.y === 0) return; // разворот на 180°
+  if (state.queue.length >= MAX_QUEUE) return;
+ 
+  const wasEmpty = state.queue.length === 0;
+  state.queue.push(newDir);
+ 
+  // Ключ к отзывчивости: не ждём конца шага, если он уже наполовину пройден
+  if (wasEmpty && state.tickProgress >= EARLY_TURN_AT) {
+    state.lastMoveTime = performance.now();
+    moveSnake();
+    state.tickProgress = 0;
+  }
+}
+ 
+function handleKeyDown(event) {
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
+ 
+  if ((event.code === "Enter" || event.code === "Space") && isMenuOpen()) {
+    event.preventDefault();
+    if (!event.repeat) startGame();
+    return;
+  }
+ 
+  const dir = KEYMAP[event.code];
+  if (!dir) return;
+  event.preventDefault();       // стрелки не скроллят страницу
+  if (event.repeat) return;
+  queueTurn(dir);
+}
+ 
+/* ---------- Старт / конец ---------- */
 function startGame() {
   initGame();
   state.running = true;
   state.lastMoveTime = performance.now();
   startMenuEl.classList.add("hidden");
   gameOverMenuEl.classList.add("hidden");
-  canvas.focus?.();
+  startBtn.blur(); restartBtn.blur();   // чтобы пробел не «нажимал» кнопку повторно
 }
-
+ 
 function endGame() {
   state.gameOver = true;
   state.running = false;
-
-  if (state.score > state.best) {
-    state.best = state.score;
-  }
-
+  state.queue = [];
+  if (state.score > state.best) state.best = state.score;
   finalScoreEl.textContent = state.score;
   finalBestEl.textContent = state.best;
+  updateHUD();
   gameOverMenuEl.classList.remove("hidden");
 }
-
+ 
 function updateHUD() {
   scoreEl.textContent = state.score;
   bestEl.textContent = state.best;
 }
-
-/* ============================================================
- *  Точка входа
- * ============================================================ */
+ 
+/* ---------- Точка входа ---------- */
 function bootstrap() {
-  buildBackground();
   initGame();
-
-  // Клик — основной путь. type="button" + stopPropagation, чтобы
-  // клики гарантированно доходили до обработчика.
-  startBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    startGame();
-  });
-
-  restartBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    startGame();
-  });
-
-  // Enter на кнопке — тоже запуск (для доступности)
-  startBtn.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      startGame();
-    }
-  });
-
+  startBtn.addEventListener("click", startGame);
+  restartBtn.addEventListener("click", startGame);
   document.addEventListener("keydown", handleKeyDown);
-
-  startMenuEl.classList.remove("hidden");
   requestAnimationFrame(gameLoop);
 }
-
+ 
 bootstrap();
+ 

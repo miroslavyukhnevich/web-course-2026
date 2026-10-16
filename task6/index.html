@@ -2,11 +2,12 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Змейка</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="game-wrapper">
+  <main class="game-wrapper">
     <div class="hud">
       <span class="hud-item">Счёт <strong id="score">0</strong></span>
       <span class="hud-item">Рекорд <strong id="best">0</strong></span>
@@ -15,39 +16,31 @@
     <div class="canvas-wrap">
       <canvas id="game" width="400" height="400"></canvas>
 
-      <!-- Меню старта -->
-      <div id="startMenu" class="overlay">
+      <section id="startMenu" class="overlay">
         <div class="overlay-card">
-          <p class="over-title">Змейка</p>
-          <p class="over-sub">Собери как можно больше яблок</p>
-
-          <div class="keys">
-            <div class="keys-row">
-              <span class="key">W</span>
-            </div>
-            <div class="keys-row">
-              <span class="key">A</span>
-              <span class="key">S</span>
-              <span class="key">D</span>
-            </div>
-            <p class="keys-label">или стрелки</p>
-          </div>
-
+          <img class="over-art" src="images/start.svg" alt="" onerror="this.remove()">
+          <h1 class="over-title">Змейка</h1>
+          <p class="over-sub">Собирайте яблоки и не врезайтесь в стены и в себя</p>
+          <p class="hint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> или стрелки</p>
           <button id="startBtn" class="btn-primary" type="button">Играть</button>
+          <p class="hint hint--small">Enter или пробел</p>
         </div>
-      </div>
+      </section>
 
-      <!-- Проигрыш -->
-      <div id="gameOverMenu" class="overlay hidden">
+      <section id="gameOverMenu" class="overlay hidden">
         <div class="overlay-card">
-          <p class="over-title over-title--danger">Игра окончена</p>
-          <p class="over-score">Счёт <strong id="finalScore">0</strong></p>
-          <p class="over-score">Рекорд <strong id="finalBest">0</strong></p>
-          <button id="restartBtn" class="btn-primary" type="button">Заново</button>
+          <img class="over-art" src="images/gameover.svg" alt="" onerror="this.remove()">
+          <h2 class="over-title over-title--danger">Игра окончена</h2>
+          <div class="results">
+            <p>Счёт <strong id="finalScore">0</strong></p>
+            <p>Рекорд <strong id="finalBest">0</strong></p>
+          </div>
+          <button id="restartBtn" class="btn-primary" type="button">Ещё раз</button>
+          <p class="hint hint--small">Enter или пробел</p>
         </div>
-      </div>
+      </section>
     </div>
-  </div>
+  </main>
   <script src="script.js"></script>
 </body>
 </html>
