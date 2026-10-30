@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Лента постов</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header__inner">
+      <h1 class="header__title">Лента постов</h1>
+      <input
+        id="search"
+        class="search"
+        type="search"
+        placeholder="Поиск по заголовку…"
+        autocomplete="off"
+        aria-label="Поиск по заголовку"
+      >
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="feed" class="feed"></div>
+
+    <div id="status" class="status" aria-live="polite"></div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
