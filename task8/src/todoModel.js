@@ -25,3 +25,16 @@ export function getStats(todos) {
   const done = todos.filter((t) => t.completed).length;
   return { total: todos.length, done, active: todos.length - done };
 }
+
+// Реестр сортировок. Новая сортировка = одна новая строка здесь.
+export const SORTS = {
+  newest: { label: 'Сначала новые', compare: (a, b) => b.createdAt - a.createdAt },
+  oldest: { label: 'Сначала старые', compare: (a, b) => a.createdAt - b.createdAt },
+  az: { label: 'По алфавиту (А→Я)', compare: (a, b) => a.text.localeCompare(b.text, 'ru') },
+  za: { label: 'По алфавиту (Я→А)', compare: (a, b) => b.text.localeCompare(a.text, 'ru') },
+};
+
+export function sortTodos(todos, sortKey) {
+  // [...todos] делает копию, поэтому исходный массив не меняется
+  return [...todos].sort(SORTS[sortKey].compare);
+}
