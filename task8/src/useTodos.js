@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { createTodo, filterTodos, sortTodos, getStats } from './todoModel';
 
 const STORAGE_KEY = 'todos';
 
-// Читаем сохранённые задачи. Если их нет (первый запуск) или данные
-// повреждены, возвращаем стартовые задачи.
 function loadTodos() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -18,28 +16,46 @@ function loadTodos() {
 // Controller: состояние и действия над задачами.
 // Хук вызывается внутри App, поэтому состояние по-прежнему принадлежит App.
 export default function useTodos() {
-  // Передаём саму функцию loadTodos, а не её вызов: React вызовет её
-  // только один раз, при первом рендере, а не при каждом.
   const [todos, setTodos] = useState(loadTodos);
   const [filter, setFilter] = useState('all');
   const [sort, setSort] = useState('newest');
 
-  // Побочный эффект: при каждом изменении списка сохраняем его в localStorage
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
   }, [todos]);
 
-  const addTodo = (text, completed) =>
-    setTodos((prev) => [createTodo(text, completed), ...prev]);
-  const toggleTodo = (id) =>
-    setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
-  const deleteTodo = (id) => setTodos((prev) => prev.filter((t) => t.id !== id));
-  const editTodo = (id, text) =>
-    setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, text: text.trim() } : t)));
+  // useCallback: функция создаётся один раз и не меняется между рендерами.
+  // Зависимости пустые, потому что внутри используется только setTodos
+  // в виде prev => ..., а сам setTodos React не пересоздаёт.
+  const addTodo = useCallback(
+    (text, completed) => setTodos((prev) => [createTodo(text, completed), ...prev]),
+    [],
+  );
+  const toggleTodo = useCallback(
+    (id) =>
+      setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))),
+    [],
+  );
+  const deleteTodo = useCallback(
+    (id) => setTodos((prev) => prev.filter((t) => t.id !== id)),
+    [],
+  );
+  const editTodo = useCallback(
+    (id, text) =>
+      setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, text: text.trim() } : t))),
+    [],
+  );
+
+  // useMemo: пересчитываем только если изменились исходные данные
+  const visibleTodos = useMemo(
+    () => sortTodos(filterTodos(todos, filter), sort),
+    [todos, filter, sort],
+  );
+  const stats = useMemo(() => getStats(todos), [todos]);
 
   return {
-    visibleTodos: sortTodos(filterTodos(todos, filter), sort),
-    stats: getStats(todos),
+    visibleTodos,
+    stats,
     filter,
     setFilter,
     sort,

@@ -1,6 +1,8 @@
+import { memo } from 'react';
 import TodoItem from './TodoItem';
 
-export default function TodoList({ todos, onToggle, onDelete, onEdit }) {
+function TodoList({ todos, onToggle, onDelete, onEdit }) {
+  
   if (todos.length === 0) return <p>Задач нет</p>;
   return (
     <ul>
@@ -16,3 +18,5 @@ export default function TodoList({ todos, onToggle, onDelete, onEdit }) {
     </ul>
   );
 }
+
+export default memo(TodoList);
