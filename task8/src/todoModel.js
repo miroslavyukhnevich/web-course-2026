@@ -38,3 +38,15 @@ export function sortTodos(todos, sortKey) {
   // [...todos] делает копию, поэтому исходный массив не меняется
   return [...todos].sort(SORTS[sortKey].compare);
 }
+
+// Преобразует задачу из jsonplaceholder в формат нашего приложения.
+// index нужен, чтобы у загруженных задач были немного разные даты
+// и порядок при сортировке «сначала новые» сохранялся.
+export function fromApiTodo(item, index = 0) {
+  return {
+    id: crypto.randomUUID(),
+    text: item.title,
+    completed: item.completed,
+    createdAt: Date.now() - index,
+  };
+}
