@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { createTodo, filterTodos, sortTodos, getStats } from './todoModel';
+import { createTodo, fromApiTodo, filterTodos, sortTodos, getStats } from './todoModel';
 
 const STORAGE_KEY = 'todos';
+const API_URL = 'https://jsonplaceholder.typicode.com/todos?_limit=10';
 
 function loadTodos() {
   try {
@@ -19,14 +20,13 @@ export default function useTodos() {
   const [todos, setTodos] = useState(loadTodos);
   const [filter, setFilter] = useState('all');
   const [sort, setSort] = useState('newest');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
   }, [todos]);
 
-  // useCallback: функция создаётся один раз и не меняется между рендерами.
-  // Зависимости пустые, потому что внутри используется только setTodos
-  // в виде prev => ..., а сам setTodos React не пересоздаёт.
   const addTodo = useCallback(
     (text, completed) => setTodos((prev) => [createTodo(text, completed), ...prev]),
     [],
@@ -46,7 +46,22 @@ export default function useTodos() {
     [],
   );
 
-  // useMemo: пересчитываем только если изменились исходные данные
+  // Загрузка задач с сервера по нажатию кнопки
+  const importTodos = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) throw new Error(`Сервер ответил с ошибкой ${response.status}`);
+      const data = await response.json();
+      setTodos((prev) => [...data.map(fromApiTodo), ...prev]);
+    } catch (e) {
+      setError(`Не удалось загрузить задачи: ${e.message}`);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const visibleTodos = useMemo(
     () => sortTodos(filterTodos(todos, filter), sort),
     [todos, filter, sort],
@@ -60,9 +75,12 @@ export default function useTodos() {
     setFilter,
     sort,
     setSort,
+    loading,
+    error,
     addTodo,
     toggleTodo,
     deleteTodo,
     editTodo,
+    importTodos,
   };
 }
