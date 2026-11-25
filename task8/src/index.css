@@ -1,7 +1,135 @@
-body { font-family: system-ui, sans-serif; max-width: 560px; margin: 40px auto; padding: 0 16px; }
-form, .filters { display: flex; gap: 8px; margin: 12px 0; }
-form input { flex: 1; }
-ul { list-style: none; padding: 0; }
-li { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
-.done span { text-decoration: line-through; color: #888; }
-button.active { font-weight: bold; }
+:root {
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --border: #d1d5db;
+  --bg-soft: #f3f4f6;
+  --danger: #dc2626;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 0 16px;
+  color: #111827;
+  background: #f9fafb;
+}
+
+h1 {
+  margin-bottom: 16px;
+}
+
+/* Общий вид кнопок, полей и выпадающих списков */
+button,
+input:not([type='checkbox']),
+select {
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+button {
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+button:hover:not(:disabled) {
+  background: var(--bg-soft);
+  border-color: #9ca3af;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Форма добавления: главная кнопка выделена цветом */
+form {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+form input {
+  flex: 1;
+}
+
+form button[type='submit'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+form button[type='submit']:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+/* Фильтры: выбранная кнопка закрашена */
+.filters {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.filters button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+label {
+  display: inline-block;
+  margin: 4px 0 12px;
+}
+
+p {
+  margin: 12px 0;
+}
+
+/* Список задач */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+li input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+li span {
+  flex: 1;
+  cursor: text;
+}
+
+li input:not([type='checkbox']) {
+  flex: 1;
+}
+
+li button:hover:not(:disabled) {
+  background: #fee2e2;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.done span {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
